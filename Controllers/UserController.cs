@@ -59,7 +59,7 @@ namespace Shop.Controllers
 
         [HttpGet]
         [Route("")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles="admin")]
         public async Task<ActionResult<List<User>>> GetAll(
             [FromServices] DataContext context
         ){
