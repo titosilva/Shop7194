@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Shop.Data;
 using Shop.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Controllers{
     [Route("products")]
@@ -12,6 +13,7 @@ namespace Shop.Controllers{
     {
         [HttpGet]
         [Route("")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> Get ([FromServices] DataContext context)
         {
             var products = await context.Products.Include(x => x.category).AsNoTracking().ToListAsync();
@@ -20,6 +22,7 @@ namespace Shop.Controllers{
 
         [HttpGet]
         [Route("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Product>> GetById(int id, [FromServices] DataContext context)
         {
             var product = await context.Products.Include(x => x.category).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
@@ -28,6 +31,7 @@ namespace Shop.Controllers{
 
         [HttpGet]
         [Route("categories/{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> GetByCategory(int id, [FromServices] DataContext context)
         {
             var products = await context.Products.Include(x => x.category).AsNoTracking().Where(x => x.category.Id == id).ToListAsync();
@@ -35,6 +39,7 @@ namespace Shop.Controllers{
         }
 
         [HttpPost]
+        [Authorize(Roles="admin")]
         public async Task<ActionResult<Product>> Post ([FromBody] Product model, [FromServices] DataContext context)
         {
             if(!ModelState.IsValid)

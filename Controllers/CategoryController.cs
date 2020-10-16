@@ -5,6 +5,7 @@ using System;
 using Shop.Models;
 using Shop.Data;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Controllers{
     [Route("categories")]
@@ -12,6 +13,7 @@ namespace Shop.Controllers{
     {
         [HttpGet]
         [Route("")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Category>>> Get([FromServices] DataContext context)
         {
             // As no tracking: desliga o retorno de proxy do DataContext (apenas retorna uma categoria, sem outras informações do EF)
@@ -21,6 +23,7 @@ namespace Shop.Controllers{
 
         [HttpGet]
         [Route("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Category>> GetById(int id, [FromServices] DataContext context)
         {
             var category = await context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
@@ -29,6 +32,7 @@ namespace Shop.Controllers{
 
         [HttpPost]
         [Route("")]
+        [Authorize(Roles="admin")]
         public async Task<ActionResult<Category>> Post([FromBody]Category model, [FromServices] DataContext context)
         {
             if (!ModelState.IsValid)
@@ -46,6 +50,7 @@ namespace Shop.Controllers{
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles="admin")]
         public async Task<ActionResult<Category>> Put(int id, [FromBody]Category model, [FromServices] DataContext context)
         {
             if(model.Id != id)
@@ -67,6 +72,7 @@ namespace Shop.Controllers{
         
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles="admin")]
         public async Task<ActionResult> Delete(int id, [FromServices] DataContext context)
         {
             var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
