@@ -3,6 +3,13 @@ To deploy MSSql server, an option is to use docker. There is a docker image that
 
 $ docker run --env-file mssql-docker-settings -p 1433:1433 -d mcr.microsoft.com/mssql/server
 
+It is possible to add persistence (between containers, that may be killed) too. For that, add the option -v when using docker to mount a host machine folder to the container's folder that stores the sql server files (default is /var/opt/mssql inside the container). Example:
+
+$ docker run --env-file mssql-docker-settings \
+             -p 1433:1433 \
+             -v /var/opt/mssql:/var/opt/mssql \
+             -d mcr.microsoft.com/mssql/server
+
 # How to build the database tables from my code?
 ## Connection Strings
 First of all, remember to adjust your connection strings (in appsettings) to your needs. For a localhost deployment, we may use 

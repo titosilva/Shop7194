@@ -21,7 +21,7 @@ namespace Shop.Controllers
             [FromServices] DataContext context,
             [FromBody] User model
         ){
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || model.role == "admin")
                 return BadRequest(ModelState);
 
             try{
@@ -50,11 +50,48 @@ namespace Shop.Controllers
 
             var token = TokenService.GenerateToken(user);
 
-            return new
+            return Ok(new
             {
                 user = user,
                 token = token
-            };
+            });
+        }
+
+        [HttpGet]
+        [Route("")]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<List<User>>> GetAll(
+            [FromServices] DataContext context
+        ){
+            try{
+                var users = await context.Users.AsNoTracking().ToListAsync();
+                return Ok(users);
+            }catch{
+                return Json(new {message = "Erro ao tentar obter usuarios"});
+            }
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        [Authorize(Roles="admin")]
+        public async Task<ActionResult<User>>  Put(
+            [FromServices] DataContext context,
+            int id,
+            [FromBody] User model
+        ){
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id != model.userId)
+                return NotFound(new { message = "User id does not match"});
+
+            try{
+                context.Entry(model).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return model;
+            }catch{
+                return Json(new { message = "Não foi possível salvar novo usuário" });
+            }
         }
     }
 }
