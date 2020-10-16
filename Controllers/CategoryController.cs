@@ -8,12 +8,16 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Controllers{
-    [Route("categories")]
+    [Route("v1/categories")]
     public class CategoryController : ControllerBase
     {
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader="User-Agent", Location = ResponseCacheLocation.Any, Duration = 30)]
+        // Use this response cache to invert (using AddResponseCaching to Startup.cs will cause all endpoints to have caching, and
+        // if that is used, the line below can be used to remove the cache from a specific endpoint).
+        // [ResponseCache(Duration=0, Location=ResponseCacheLocation.None, NoStore=true)]
         public async Task<ActionResult<List<Category>>> Get([FromServices] DataContext context)
         {
             // As no tracking: desliga o retorno de proxy do DataContext (apenas retorna uma categoria, sem outras informações do EF)

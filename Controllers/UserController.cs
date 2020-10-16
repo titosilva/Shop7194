@@ -60,6 +60,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("")]
         [Authorize(Roles="admin")]
+        [ResponseCache(VaryByHeader="User-Agent", Location = ResponseCacheLocation.Any, Duration = 30)]
         public async Task<ActionResult<List<User>>> GetAll(
             [FromServices] DataContext context
         ){

@@ -14,6 +14,7 @@ namespace Shop.Controllers{
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader="User-Agent", Location = ResponseCacheLocation.Any, Duration = 30)]
         public async Task<ActionResult<List<Product>>> Get ([FromServices] DataContext context)
         {
             var products = await context.Products.Include(x => x.category).AsNoTracking().ToListAsync();
@@ -23,6 +24,7 @@ namespace Shop.Controllers{
         [HttpGet]
         [Route("{id:int}")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader="User-Agent", Location = ResponseCacheLocation.Any, Duration = 30)]
         public async Task<ActionResult<Product>> GetById(int id, [FromServices] DataContext context)
         {
             var product = await context.Products.Include(x => x.category).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
@@ -32,6 +34,7 @@ namespace Shop.Controllers{
         [HttpGet]
         [Route("categories/{id:int}")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader="User-Agent", Location = ResponseCacheLocation.Any, Duration = 30)]
         public async Task<ActionResult<List<Product>>> GetByCategory(int id, [FromServices] DataContext context)
         {
             var products = await context.Products.Include(x => x.category).AsNoTracking().Where(x => x.category.Id == id).ToListAsync();
