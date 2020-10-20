@@ -21,12 +21,15 @@ namespace Shop.Controllers
             [FromServices] DataContext context,
             [FromBody] User model
         ){
-            if (!ModelState.IsValid || model.role == "admin")
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try{
+                model.role = "user";
                 context.Users.Add(model);
                 await context.SaveChangesAsync();
+
+                model.password = "";
                 return model;
             }
             catch(Exception)
@@ -49,6 +52,8 @@ namespace Shop.Controllers
                 return NotFound(new { message = "Usuário ou senha inválidos" });
 
             var token = TokenService.GenerateToken(user);
+
+            user.password = "";
 
             return Ok(new
             {
@@ -89,6 +94,9 @@ namespace Shop.Controllers
             try{
                 context.Entry(model).State = EntityState.Modified;
                 await context.SaveChangesAsync();
+
+                model.password = "";
+
                 return model;
             }catch{
                 return Json(new { message = "Não foi possível salvar novo usuário" });
